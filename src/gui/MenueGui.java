@@ -41,7 +41,7 @@ public class MenueGui extends JFrame {
 
         algorithmusAuswahl.addItem("8 x 8");
         algorithmusAuswahl.addItem("16 x 16");
-        algorithmusAuswahl.addItem("32 x 32");
+        algorithmusAuswahl.addItem("25 x 25");
         hauptPanel.setLayout(new GridLayout(4, 1));
         hauptPanel.add(abschnitt1Panel);
         abschnitt1Panel.setLayout(new GridLayout(2, 1));
@@ -62,8 +62,8 @@ public class MenueGui extends JFrame {
                     GameGui gameGui = new GameGui(8,8);
                 }else if(algorithmusAuswahl.getSelectedItem().equals("16 x 16")){
                     GameGui gameGui = new GameGui(16,16);
-                }else if(algorithmusAuswahl.getSelectedItem().equals("32 x 32")){
-                    GameGui gameGui = new GameGui(32,32);
+                }else if(algorithmusAuswahl.getSelectedItem().equals("25 x 25")){
+                    GameGui gameGui = new GameGui(25,25);
                 }
             }
         });

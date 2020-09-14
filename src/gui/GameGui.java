@@ -27,15 +27,17 @@ public class GameGui extends JFrame{
         getContentPane().add(mainPanel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
-        setSize(600, 600);
+        if(x == 8){
+            setSize(300, 300);
+        }else if (x == 16){
+            setSize(600, 600);
+        }else if(x == 25){
+            setSize(938, 938);
+        }
         setResizable(true);
 
         mainPanel.setLayout(new BorderLayout());
-        //mainPanel.add(sidePanel, BorderLayout.WEST);
         mainPanel.add(gamePanel, BorderLayout.CENTER);
-
-        //sidePanel.setBackground(Color.CYAN);
-        //gamePanel.setBackground(Color.MAGENTA);
         gamePanel.setLayout(new GridLayout(y,x));
 
         for (int i = 0; i < y; i++) {
@@ -43,7 +45,7 @@ public class GameGui extends JFrame{
                 fields[i][j] = new JLabel();
                 gamePanel.add(fields[i][j]);
                 fields[i][j].setBorder(BorderFactory.createLineBorder(Color.black));
-                fields[i][j].setBackground(Color.darkGray);
+                fields[i][j].setBackground(Color.gray);
                 fields[i][j].setOpaque(true);
             }
         }
@@ -202,7 +204,15 @@ public class GameGui extends JFrame{
                 fields2[i][j] = false;
             }
         }
-        for (int i = 0; i < 40; i++) {
+        int a = 0;
+        if(x == 8){
+            a = 10;
+        }else if (x == 16){
+            a = 40;
+        }else if(x == 25){
+            a = 63;
+        }
+        for (int i = 0; i < a; i++) {
             int randomX = random.nextInt(x);
             int randomY = random.nextInt(y);
             if(fields2[randomY][randomX]){
