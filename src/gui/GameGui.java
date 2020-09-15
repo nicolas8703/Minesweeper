@@ -134,7 +134,6 @@ public class GameGui extends JFrame {
                             }else {
                                 fields[finalI][finalJ].setIcon(imageIcon);
                                 countMarked();
-                                System.out.println(marked);
                             }
                         }
                         if (marked + clicked == x * y) {
@@ -383,7 +382,7 @@ public class GameGui extends JFrame {
         }
         int a = 0;
         if (x == 8) {
-            a = 5;
+            a = 10;
         } else if (x == 16) {
             a = 40;
         } else if (x == 25) {
