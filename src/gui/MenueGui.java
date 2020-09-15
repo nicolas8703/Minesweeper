@@ -32,7 +32,7 @@ public class MenueGui extends JFrame {
 
 
     MenueGui(){
-        super("Sortieralgorithmus Visualisierung");
+        super("Minesweeper");
         getContentPane().add(hauptPanel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
