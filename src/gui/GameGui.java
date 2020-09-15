@@ -80,49 +80,63 @@ public class GameGui extends JFrame {
                                     fields[finalI][finalJ].setIcon(imageIcon);
                                     //findAllEmptyFields(fields2, finalJ, finalI, fields);
                                     countClicked();
+                                    fields[finalI][finalJ].removeMouseListener(this);
                                 } else if (countBombs == 1) {
                                     ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper1.jpg"));
                                     fields[finalI][finalJ].setIcon(imageIcon);
                                     countClicked();
+                                    fields[finalI][finalJ].removeMouseListener(this);
                                 } else if (countBombs == 2) {
                                     ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper2.jpg"));
                                     fields[finalI][finalJ].setIcon(imageIcon);
                                     countClicked();
+                                    fields[finalI][finalJ].removeMouseListener(this);
                                 } else if (countBombs == 3) {
                                     ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper3.jpg"));
                                     fields[finalI][finalJ].setIcon(imageIcon);
                                     countClicked();
+                                    fields[finalI][finalJ].removeMouseListener(this);
                                 } else if (countBombs == 4) {
                                     ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper4.jpg"));
                                     fields[finalI][finalJ].setIcon(imageIcon);
                                     countClicked();
+                                    fields[finalI][finalJ].removeMouseListener(this);
                                 } else if (countBombs == 5) {
                                     ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper5.jpg"));
                                     fields[finalI][finalJ].setIcon(imageIcon);
                                     countClicked();
+                                    fields[finalI][finalJ].removeMouseListener(this);
                                 } else if (countBombs == 6) {
                                     ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper6.jpg"));
                                     fields[finalI][finalJ].setIcon(imageIcon);
                                     countClicked();
+                                    fields[finalI][finalJ].removeMouseListener(this);
                                 } else if (countBombs == 7) {
                                     ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper7.jpg"));
                                     fields[finalI][finalJ].setIcon(imageIcon);
                                     countClicked();
+                                    fields[finalI][finalJ].removeMouseListener(this);
                                 } else if (countBombs == 8) {
                                     ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper8.jpg"));
                                     fields[finalI][finalJ].setIcon(imageIcon);
                                     countClicked();
+                                    fields[finalI][finalJ].removeMouseListener(this);
                                 }
                             }
-                            repaint();
+                           repaint();
                         }
                         if (SwingUtilities.isRightMouseButton(e)) {
                             ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeperMarked.jpg"));
-                            fields[finalI][finalJ].setIcon(imageIcon);
-                            countMarked();
+                            if(fields[finalI][finalJ].getIcon() != null) {
+                                    fields[finalI][finalJ].setIcon(null);
+                                    countMarkedMinus();
+                                    fields[finalI][finalJ].revalidate();
+                            }else {
+                                fields[finalI][finalJ].setIcon(imageIcon);
+                                countMarked();
+                                System.out.println(marked);
+                            }
                         }
-                        System.out.println("Marked " + marked);
-                        System.out.println("CLicked " + clicked);
                         if (marked + clicked == x * y) {
                             JLabel nachricht = new JLabel("Du hast das Spiel gewonnen!");
                             nachricht.setFont(new Font("SansSerif", Font.BOLD, 25));
@@ -158,7 +172,9 @@ public class GameGui extends JFrame {
     private void countMarked() {
         marked++;
     }
-
+    private void countMarkedMinus() {
+        marked--;
+    }
 
     private void findAllEmptyFields(boolean[][] fields2, int x, int y, JLabel[][] fields) {
         if (x > 0) {
@@ -166,7 +182,9 @@ public class GameGui extends JFrame {
                 if (!fields2[y][x - 1]) {
                     ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
                     fields[y][x - 1].setIcon(imageIcon);
-                    findAllEmptyFields(fields2, x - 1, y, fields);
+                    if(x-1 > 0){
+                        findAllEmptyFields(fields2, x - 1, y, fields);
+                    }
                 }
             }
         }
@@ -175,7 +193,7 @@ public class GameGui extends JFrame {
                 if (!fields2[y][x + 1]) {
                     ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
                     fields[y][x + 1].setIcon(imageIcon);
-                    findAllEmptyFields(fields2, x + 1, y, fields);
+                    //findAllEmptyFields(fields2, x + 1, y, fields);
                 }
             }
         }
@@ -184,7 +202,9 @@ public class GameGui extends JFrame {
                 if (!fields2[y - 1][x]) {
                     ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
                     fields[y - 1][x].setIcon(imageIcon);
-                    findAllEmptyFields(fields2, x, y - 1, fields);
+                    if(y-1 > 0){
+                        findAllEmptyFields(fields2, x, y - 1, fields);
+                    }
                 }
             }
         }
@@ -193,7 +213,10 @@ public class GameGui extends JFrame {
                 if (!fields2[y + 1][x]) {
                     ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
                     fields[y + 1][x].setIcon(imageIcon);
-                    findAllEmptyFields(fields2, x, y + 1, fields);
+                    if (y+1 < fields.length - 1){
+                        findAllEmptyFields(fields2, x, y + 1, fields);
+                    }
+
                 }
             }
         }
@@ -296,6 +319,9 @@ public class GameGui extends JFrame {
             if (fields2[y][x + 1]) {
                 count++;
             }
+            if (fields2[y-1][x]) {
+                count++;
+            }
             if (fields2[y - 1][x - 1]) {
                 count++;
             }
@@ -357,7 +383,7 @@ public class GameGui extends JFrame {
         }
         int a = 0;
         if (x == 8) {
-            a = 10;
+            a = 5;
         } else if (x == 16) {
             a = 40;
         } else if (x == 25) {
