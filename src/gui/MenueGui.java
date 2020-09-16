@@ -4,7 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Vector;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 /**
  * Nicolas Feige
@@ -16,9 +17,9 @@ import java.util.Vector;
 
 
 public class MenueGui extends JFrame {
-    private JComboBox algorithmusAuswahl = new JComboBox();
-    private JTextField eingabePause = new JTextField();
-    private JTextField eingabeZahlen = new JTextField();
+    private JComboBox schwierigkeitstufenAuswahl = new JComboBox();
+    private JTextField eingabeFeldgrösse = new JTextField();
+    private JTextField eingabeAnzahlBomben = new JTextField();
 
     private JPanel hauptPanel = new JPanel();
     private JPanel abschnitt1Panel = new JPanel();
@@ -26,9 +27,10 @@ public class MenueGui extends JFrame {
     private JPanel abschnitt3Panel = new JPanel();
     private JPanel startPanel = new JPanel();
     private JPanel startPanelSplit = new JPanel();
-    private JLabel titelAlgortihmus = new JLabel("Wie gross soll das Feld sein: ");
-    private JLabel titelPause = new JLabel("Pause zwischen den Sortierungen: (in Millisekunden)");
+    private JLabel titelSchwierigkeit = new JLabel("Schwierigkeitsstufen: ");
+    private JLabel titelFeldgrösse = new JLabel("Grösse des Feldes (Format: 10 x 10)");
     private JButton start = new JButton("Start");
+    private JLabel titelAnzahlBomben = new JLabel("Anzahl Bomben: ");
 
 
     MenueGui(){
@@ -39,34 +41,60 @@ public class MenueGui extends JFrame {
         setSize(330, 300);
         setResizable(false);
 
-        algorithmusAuswahl.addItem("8 x 8");
-        algorithmusAuswahl.addItem("16 x 16");
-        algorithmusAuswahl.addItem("25 x 25");
+        schwierigkeitstufenAuswahl.addItem("Anfänger");
+        schwierigkeitstufenAuswahl.addItem("Fortgeschrittene");
+        schwierigkeitstufenAuswahl.addItem("Profis");
+        schwierigkeitstufenAuswahl.addItem("Benutzerdefiniert");
         hauptPanel.setLayout(new GridLayout(4, 1));
         hauptPanel.add(abschnitt1Panel);
         abschnitt1Panel.setLayout(new GridLayout(2, 1));
-        abschnitt1Panel.add(titelAlgortihmus);
-        abschnitt1Panel.add(algorithmusAuswahl);
+        abschnitt1Panel.add(titelSchwierigkeit);
+        abschnitt1Panel.add(schwierigkeitstufenAuswahl);
 
+        hauptPanel.add(abschnitt2Panel);
+        abschnitt2Panel.setLayout(new GridLayout(2, 1));
+
+        hauptPanel.add(abschnitt3Panel);
+        abschnitt3Panel.setLayout(new GridLayout(2, 1));
+        abschnitt2Panel.add(titelFeldgrösse);
+        abschnitt2Panel.add(eingabeFeldgrösse);
+        abschnitt3Panel.add(titelAnzahlBomben);
+        abschnitt3Panel.add(eingabeAnzahlBomben);
 
         hauptPanel.add(startPanel);
         startPanel.setLayout(new GridLayout(2, 1));
         startPanel.add(startPanelSplit);
         startPanel.add(start);
         start.setFont(new Font("SansSerif", Font.BOLD, 12));
-
+        showCustom();
 
         start.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(algorithmusAuswahl.getSelectedItem().equals("8 x 8")){
-                    GameGui gameGui = new GameGui(8,8);
-                }else if(algorithmusAuswahl.getSelectedItem().equals("16 x 16")){
-                    GameGui gameGui = new GameGui(16,16);
-                }else if(algorithmusAuswahl.getSelectedItem().equals("25 x 25")){
-                    GameGui gameGui = new GameGui(25,25);
+                if(schwierigkeitstufenAuswahl.getSelectedItem().equals("Anfänger")){
+                    GameGui gameGui = new GameGui(8,8, 10);
+                }else if(schwierigkeitstufenAuswahl.getSelectedItem().equals("Fortgeschrittene")){
+                    GameGui gameGui = new GameGui(16,16, 40);
+                }else if(schwierigkeitstufenAuswahl.getSelectedItem().equals("Profis")){
+                    GameGui gameGui = new GameGui(25,25, 131);
+                }else if(schwierigkeitstufenAuswahl.getSelectedItem().equals("Benutzerdefiniert")){
+                    if(eingabeAnzahlBomben.getText().isEmpty()){
+                        JLabel nachricht = new JLabel("Es muss etwas eingegeben werden!");
+                        nachricht.setFont(new Font("SansSerif", Font.BOLD, 25));
+                        JOptionPane.showMessageDialog(null, nachricht);
+                    }else if(eingabeFeldgrösse.getText().isEmpty()) {
+                        JLabel nachricht = new JLabel("Es muss etwas eingegeben werden!");
+                        nachricht.setFont(new Font("SansSerif", Font.BOLD, 25));
+                        JOptionPane.showMessageDialog(null, nachricht);
+                    }else {
+                        GameGui gameGui = new GameGui(25,25, Integer.parseInt(eingabeAnzahlBomben.getText()));
+                    }
+
                 }
             }
         });
+    }
+
+    private void showCustom(){
     }
 
     public static void main(String[] args) {

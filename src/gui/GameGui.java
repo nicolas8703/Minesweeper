@@ -21,7 +21,7 @@ public class GameGui extends JFrame {
     private JPanel sidePanel = new JPanel();
     private JPanel gamePanel = new JPanel();
 
-    GameGui(int x, int y) {
+    GameGui(int x, int y, int anzahlBombs) {
         super("Minesweeper");
         JLabel[][] fields = new JLabel[y][x];
         getContentPane().add(mainPanel);
@@ -52,8 +52,7 @@ public class GameGui extends JFrame {
 
         repaint();
         boolean[][] fields2;
-        fields2 = createField(x, y);
-
+        fields2 = createField(x, y, anzahlBombs);
 
         for (int i = 0; i < y; i++) {
             for (int j = 0; j < x; j++) {
@@ -123,20 +122,20 @@ public class GameGui extends JFrame {
                                     fields[finalI][finalJ].removeMouseListener(this);
                                 }
                             }
-                           repaint();
+                            repaint();
                         }
                         if (SwingUtilities.isRightMouseButton(e)) {
                             ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeperMarked.jpg"));
-                            if(fields[finalI][finalJ].getIcon() != null) {
-                                    fields[finalI][finalJ].setIcon(null);
-                                    countMarkedMinus();
-                                    fields[finalI][finalJ].revalidate();
-                            }else {
+                            if (fields[finalI][finalJ].getIcon() != null) {
+                                fields[finalI][finalJ].setIcon(null);
+                                countMarkedMinus();
+                                fields[finalI][finalJ].revalidate();
+                            } else {
                                 fields[finalI][finalJ].setIcon(imageIcon);
                                 countMarked();
                             }
                         }
-                        if (marked + clicked == x * y) {
+                        if (marked + clicked == x * y && marked == anzahlBombs) {
                             JLabel nachricht = new JLabel("Du hast das Spiel gewonnen!");
                             nachricht.setFont(new Font("SansSerif", Font.BOLD, 25));
                             JOptionPane.showMessageDialog(null, nachricht);
@@ -171,55 +170,334 @@ public class GameGui extends JFrame {
     private void countMarked() {
         marked++;
     }
+
     private void countMarkedMinus() {
         marked--;
     }
 
-    private void findAllEmptyFields(boolean[][] fields2, int x, int y, JLabel[][] fields) {
-        if (x > 0) {
-            if (0 == countBombs(fields2, x - 1, y)) {
-                if (!fields2[y][x - 1]) {
-                    ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
-                    fields[y][x - 1].setIcon(imageIcon);
-                    if(x-1 > 0){
-                        findAllEmptyFields(fields2, x - 1, y, fields);
-                    }
-                }
+    private void findAllEmptyFields(boolean[][] fields2, int x, int y, JLabel[][] fields){
+        if (x == 0 && y == 0) {
+            if (countBombs(fields2, x+1, y) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y][x + 1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x + 1, y, fields);
             }
-        }
-        if (x < fields.length - 1) {
-            if (0 == countBombs(fields2, x + 1, y)) {
-                if (!fields2[y][x + 1]) {
-                    ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
-                    fields[y][x + 1].setIcon(imageIcon);
-                    //findAllEmptyFields(fields2, x + 1, y, fields);
-                }
+            if (countBombs(fields2, x, y+1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y+1][x].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x, y+1, fields);
             }
-        }
-        if (y > 0) {
-            if (0 == countBombs(fields2, x, y - 1)) {
-                if (!fields2[y - 1][x]) {
-                    ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
-                    fields[y - 1][x].setIcon(imageIcon);
-                    if(y-1 > 0){
-                        findAllEmptyFields(fields2, x, y - 1, fields);
-                    }
-                }
+            if (countBombs(fields2, x+1, y+1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y+1][x + 1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x + 1, y+1, fields);
             }
-        }
-        if (y < fields.length - 1) {
-            if (0 == countBombs(fields2, x, y + 1)) {
-                if (!fields2[y + 1][x]) {
-                    ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
-                    fields[y + 1][x].setIcon(imageIcon);
-                    if (y+1 < fields.length - 1){
-                        findAllEmptyFields(fields2, x, y + 1, fields);
-                    }
-
-                }
+        } else if (x == 0 && y == fields2.length - 1) {
+            if (countBombs(fields2, x+1, y) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y][x + 1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x + 1, y, fields);
+            }
+            if (countBombs(fields2, x, y-1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y-1][x].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x, y-1, fields);
+            }
+            if (countBombs(fields2, x+1, y-1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y-1][x+1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x+1, y-1, fields);
+            }
+        } else if (y == 0 && x == fields2.length - 1) {
+            if (countBombs(fields2, x-1, y) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y][x-1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x-1, y, fields);
+            }
+            if (countBombs(fields2, x, y+1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y+1][x].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x, y+1, fields);
+            }
+            if (countBombs(fields2, x-1, y+1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y+1][x-1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x-1, y+1, fields);
+            }
+        } else if (y == fields2.length - 1 && x == fields2.length - 1) {
+            if (countBombs(fields2, x-1, y) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y][x-1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x-1, y, fields);
+            }
+            if (countBombs(fields2, x, y-1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y-1][x].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x, y-1, fields);
+            }
+            if (countBombs(fields2, x-1, y-1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y-1][x-1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x-1, y-1, fields);
+            }
+        } else if (x == 0) {
+            if (countBombs(fields2, x+1, y) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y][x + 1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x + 1, y, fields);
+            }
+            if (countBombs(fields2, x, y-1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y-1][x].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x, y-1, fields);
+            }
+            if (countBombs(fields2, x, y+1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y+1][x].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x, y+1, fields);
+            }
+            if (countBombs(fields2, x+1, y+1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y+1][x + 1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x + 1, y+1, fields);
+            }
+            if (countBombs(fields2, x+1, y-1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y-1][x + 1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x + 1, y-1, fields);
+            }
+        } else if (y == 0) {
+            if (countBombs(fields2, x-1, y) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y][x-1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x-1, y, fields);
+            }
+            if (countBombs(fields2, x+1, y) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y][x + 1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x + 1, y, fields);
+            }
+            if (countBombs(fields2, x, y+1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y+1][x].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x, y+1, fields);
+            }
+            if (countBombs(fields2, x+1, y+1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y+1][x + 1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x + 1, y+1, fields);
+            }
+            if (countBombs(fields2, x-1, y+1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y+1][x-1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x-1, y+1, fields);
+            }
+        } else if (x == fields2.length - 1) {
+            if (countBombs(fields2, x-1, y) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y][x-1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x-1, y, fields);
+            }
+            if (countBombs(fields2, x, y-1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y-1][x].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x, y-1, fields);
+            }
+            if (countBombs(fields2, x, y+1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y+1][x].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x, y+1, fields);
+            }
+            if (countBombs(fields2, x-1, y-1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y-1][x-1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x-1, y-1, fields);
+            }
+            if (countBombs(fields2, x-1, y+1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y+1][x-1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x-1, y+1, fields);
+            }
+        } else if (y == fields2.length - 1) {
+            if (countBombs(fields2, x-1, y) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y][x-1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x-1, y, fields);
+            }
+            if (countBombs(fields2, x+1, y) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y][x + 1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x + 1, y, fields);
+            }
+            if (countBombs(fields2, x, y-1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y-1][x].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x, y-1, fields);
+            }
+            if (countBombs(fields2, x-1, y-1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y-1][x-1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x-1, y-1, fields);
+            }
+            if (countBombs(fields2, x+1, y-1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y-1][x + 1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x + 1, y-1, fields);
+            }
+        } else {
+            if (countBombs(fields2, x-1, y) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y][x - 1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x - 1, y, fields);
+            }
+            if (countBombs(fields2, x+1, y) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y][x + 1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x + 1, y, fields);
+            }
+            if (countBombs(fields2, x, y-1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y-1][x].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x, y-1, fields);
+            }
+            if (countBombs(fields2, x, y+1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y+1][x].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x, y+1, fields);
+            }
+            if (countBombs(fields2, x-1, y-1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y-1][x-1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x-1, y-1, fields);
+            }
+            if (countBombs(fields2, x+1, y+1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y+1][x + 1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x + 1, y+1, fields);
+            }
+            if (countBombs(fields2, x+1, y-1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y-1][x + 1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x + 1, y-1, fields);
+            }
+            if (countBombs(fields2, x-1, y+1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y+1][x-1].setIcon(imageIcon);
+                findAllEmptyFields(fields2, x-1, y+1, fields);
             }
         }
     }
+
+    private int findAllEmptyFields2(boolean[][] fields2, int x, int y, JLabel[][] fields) {
+        if(countBombs(fields2, x, y) != 0){
+            return 0;
+        }
+
+        if (x > 0) {
+            if (countBombs(fields2, x - 1, y) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y][x - 1].setIcon(imageIcon);
+                findAllEmptyFields2(fields2, x - 1, y, fields);
+            }
+        }
+        if (y > 0) {
+            if (countBombs(fields2, x, y - 1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y - 1][x].setIcon(imageIcon);
+                findAllEmptyFields2(fields2, x, y - 1, fields);
+            }
+        }
+        if (x < fields2.length - 1) {
+            if (countBombs(fields2, x + 1, y) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y][x + 1].setIcon(imageIcon);
+                findAllEmptyFields2(fields2, x+1, y, fields);
+            }
+        }
+        if (y < fields2.length - 1) {
+            if (countBombs(fields2, x, y + 1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y + 1][x].setIcon(imageIcon);
+                findAllEmptyFields2(fields2, x, y + 1, fields);
+            }
+        }
+        if (y > 0 && x > 0) {
+            if (countBombs(fields2, x - 1, y - 1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y - 1][x - 1].setIcon(imageIcon);
+                findAllEmptyFields2(fields2, x - 1, y - 1, fields);
+            }
+        }
+        if (x > 0 && y < fields2.length - 1) {
+            if (countBombs(fields2, x - 1, y + 1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y + 1][x - 1].setIcon(imageIcon);
+                findAllEmptyFields2(fields2, x - 1, y + 1, fields);
+            }
+        }
+        if (y > 0 && x < fields2.length - 1) {
+            if (countBombs(fields2, x + 1, y - 1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y - 1][x + 1].setIcon(imageIcon);
+                findAllEmptyFields2(fields2, x + 1, y - 1, fields);
+            }
+        }
+        if (y < fields2.length - 1 && x < fields2.length - 1) {
+            if (countBombs(fields2, x + 1, y + 1) == 0) {
+                ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("images/minesweeper0.jpg"));
+                fields[y + 1][x + 1].setIcon(imageIcon);
+                findAllEmptyFields2(fields2, x + 1, y + 1, fields);
+            }
+        }
+    return 0;
+    }
+
+    private int countBombs2(boolean[][] fields2, int x, int y) {
+        int count = 0;
+
+        if (x > 0) {
+            if (fields2[x - 1][y]) {
+                count++;
+            }
+        }
+        if (y > 0) {
+            if (fields2[x][y - 1]) {
+                count++;
+            }
+        }
+        if (x < fields2.length - 1) {
+            if (fields2[x + 1][y]) {
+                count++;
+            }
+        }
+        if (y < fields2.length - 1) {
+            if (fields2[x][y + 1]) {
+                count++;
+            }
+        }
+        if (y > 0 && x > 0) {
+            if (fields2[x - 1][y - 1]) {
+                count++;
+            }
+        }
+        if (x > 0 && y < fields2.length - 1) {
+            if (fields2[x - 1][y + 1]) {
+                count++;
+            }
+        }
+        if (y > 0 && x < fields2.length - 1) {
+            if (fields2[x + 1][y - 1]) {
+                count++;
+            }
+        }
+        if (y < fields2.length - 1 && x < fields2.length - 1) {
+            if (fields2[x + 1][y + 1]) {
+                count++;
+            }
+        }
+        return count;
+    }
+
 
     private int countBombs(boolean[][] fields2, int x, int y) {
         int count = 0;
@@ -318,7 +596,7 @@ public class GameGui extends JFrame {
             if (fields2[y][x + 1]) {
                 count++;
             }
-            if (fields2[y-1][x]) {
+            if (fields2[y - 1][x]) {
                 count++;
             }
             if (fields2[y - 1][x - 1]) {
@@ -372,7 +650,7 @@ public class GameGui extends JFrame {
         dispose();
     }
 
-    private boolean[][] createField(int x, int y) {
+    private boolean[][] createField(int x, int y, int anzahlBombs) {
         boolean[][] fields2 = new boolean[y][x];
         Random random = new Random();
         for (int i = 0; i < y; i++) {
@@ -380,15 +658,8 @@ public class GameGui extends JFrame {
                 fields2[i][j] = false;
             }
         }
-        int a = 0;
-        if (x == 8) {
-            a = 10;
-        } else if (x == 16) {
-            a = 40;
-        } else if (x == 25) {
-            a = 63;
-        }
-        for (int i = 0; i < a; i++) {
+
+        for (int i = 0; i < anzahlBombs; i++) {
             int randomX = random.nextInt(x);
             int randomY = random.nextInt(y);
             if (fields2[randomY][randomX]) {
